@@ -8,15 +8,17 @@ public class UnitSetup : MonoBehaviour {
 
     private float startTime;
     private bool StartBattleMap;
+    private bool SetupTrigger; // setup scene
 
     void Start()
     {
         startTime = Time.time;
+        SetupTrigger = false;
     }
 
     public void BringSide(int side)                 //Brings the map side that user chose
     {                                               //side = 0 -> French, side = 1 -> Allied
-        GameObject.Find("BattleMap").transform.GetChild(side).gameObject.SetActive(true);
+        GameObject.Find("BattleMap").transform.GetChild(side).GetComponent<SpriteRenderer>().enabled = true;
         SetupUnit.transform.GetChild(side).gameObject.SetActive(true);
     }
 
@@ -33,6 +35,24 @@ public class UnitSetup : MonoBehaviour {
         }
 
         StartBattleMap = true;
+        SetupTrigger = false;
+
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
+        {
+            obj.transform.localScale += new Vector3(0.0f, 0.1f, 0.0f);
+            if (obj.transform.childCount != 0)
+                obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 90.0f);
+        }
+    }
+
+    public void PlayerFrench()
+    {
+        PlayerPrefs.SetString("Player", "French");
+    }
+
+    public void PlayerAllied()
+    {
+        PlayerPrefs.SetString("Player", "Allied");
     }
 
     void Update()
@@ -57,12 +77,46 @@ public class UnitSetup : MonoBehaviour {
                     angle = Mathf.MoveTowardsAngle(child.eulerAngles.z, target, 150.0f * Time.deltaTime);
                     child.eulerAngles = new Vector3(0.0f, 0.0f, angle);
                 }
+
+                if (child.eulerAngles.z == 270.0f || child.eulerAngles.z == 90.0f)
+                {
+                    child.localScale = new Vector2(1.11f, 1.11f);
+                    StartBattleMap = false; // End of Iteration
+                    SetupTrigger = true;
+                    Screen.autorotateToPortrait = true;
+                }
+            }
+        }
+
+        //Screen Orientation
+        if (Input.deviceOrientation == DeviceOrientation.Portrait && SetupTrigger)
+        {
+            GameObject.Find("BattleMap").transform.localScale = new Vector2(0.56f, 0.56f);
+            if (PlayerPrefs.GetString("Player") == "French")
+            {
+                GameObject.Find("BattleMap").transform.eulerAngles = new Vector3(0.0f, 0.0f, 90.0f);
+            }
+            else if (PlayerPrefs.GetString("Player") == "Allied")
+            {
+                GameObject.Find("BattleMap").transform.eulerAngles = new Vector3(0.0f, 0.0f, 270.0f);
             }
 
-            if (SetupUnit.transform.GetChild(0).localScale.x == 1.11f
-                && SetupUnit.transform.GetChild(0).eulerAngles.z == 90.0f)
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
             {
-                StartBattleMap = false; //End Iteration
+                if (obj.transform.childCount != 0)
+                    obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+            }
+        }
+        else if ((Input.deviceOrientation == DeviceOrientation.LandscapeLeft ||
+        Input.deviceOrientation == DeviceOrientation.LandscapeRight) && SetupTrigger)
+        {
+            GameObject.Find("BattleMap").transform.localScale = new Vector2(1.0f, 1.0f);
+            GameObject.Find("BattleMap").transform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
+            {
+                if (obj.transform.childCount != 0)
+                    obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 180.0f);
             }
         }
     }
