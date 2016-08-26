@@ -10,8 +10,16 @@ public class UnitSetup : MonoBehaviour {
     private bool StartBattleMap;
     private bool SetupTrigger; // setup scene
 
+    private int playerCount;
+
+    public static bool UNIT_SELECTED;
+    public static bool BATTLE_STARTED;
+
     void Start()
     {
+        UNIT_SELECTED = false;
+        BATTLE_STARTED = false;
+        playerCount = 0;
         startTime = Time.time;
         SetupTrigger = false;
     }
@@ -29,19 +37,61 @@ public class UnitSetup : MonoBehaviour {
 
     public void StartBattle() //Called when 'Start' button is pressed
     {
-        foreach (Transform child in SetupUnit.transform)
+        if (PlayerPrefs.GetString("Player") == "French" && playerCount < 2)
         {
-            child.gameObject.SetActive(false);
+            if (playerCount == 0)
+            {
+                GameObject.FindGameObjectWithTag("FrenchBattleMap").SetActive(false);
+                GameObject.FindGameObjectWithTag("FrenchSetup").SetActive(false);
+                BringSide(1);
+            }
+            playerCount += 1;
+        }
+        else if (PlayerPrefs.GetString("Player") == "Allied" && playerCount < 2)
+        {
+            if (playerCount == 0)
+            {
+                GameObject.FindGameObjectWithTag("AlliedBattleMap").SetActive(false);
+                GameObject.FindGameObjectWithTag("AlliedSetup").SetActive(false);
+                BringSide(0);
+            }
+            playerCount += 1;
         }
 
-        StartBattleMap = true;
-        SetupTrigger = false;
+        if (playerCount == 2) {
+            foreach (Transform child in GameObject.Find("BattleMap").transform)
+            {
+                child.gameObject.SetActive(true);
+            }
 
-        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
-        {
-            obj.transform.localScale += new Vector3(0.0f, 0.1f, 0.0f);
-            if (obj.transform.childCount != 0)
-                obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 90.0f);
+            foreach (Transform child in SetupUnit.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
+
+            StartBattleMap = true;
+            SetupTrigger = false;
+
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
+            {
+                obj.transform.localScale += new Vector3(0.0f, 0.1f, 0.0f);
+                if (obj.transform.childCount != 0)
+                    obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 90.0f);
+            }
+
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("ReserveSpot"))
+            {
+                obj.transform.localScale += new Vector3(0.0f, 0.1f, 0.0f);
+                if (obj.transform.childCount != 0)
+                {
+                    obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 90.0f);
+                    obj.transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sortingOrder =
+                        obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder - 1;
+                }
+            }
+
+            HideUnits(); // Hidden Units
+            BATTLE_STARTED = true;
         }
     }
 
@@ -53,6 +103,32 @@ public class UnitSetup : MonoBehaviour {
     public void PlayerAllied()
     {
         PlayerPrefs.SetString("Player", "Allied");
+    }
+
+    public void HideUnits()
+    {
+        if (PlayerPrefs.GetString("Player") == "French") // Chosen Defender
+        {
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
+            {
+                if (obj.transform.childCount > 0 && obj.transform.GetChild(0).name.StartsWith("F")) // if Defender is French, then reveal Allied
+                {
+                    obj.transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sortingOrder =
+                        obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder - 1;
+                }
+            }
+        }
+        else if (PlayerPrefs.GetString("Player") == "Allied") // Chosen Defender
+        {
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
+            {
+                if (obj.transform.childCount > 0 && obj.transform.GetChild(0).name.StartsWith("A")) // if Defender is Allied, then reveal French
+                {
+                    obj.transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>().sortingOrder =
+                        obj.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingOrder - 1;
+                }
+            }
+        }
     }
 
     void Update()
@@ -115,7 +191,9 @@ public class UnitSetup : MonoBehaviour {
 
             foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
             {
-                if (obj.transform.childCount != 0)
+                if (obj.transform.childCount != 0 && obj.transform.parent.name.StartsWith("F"))
+                    obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                else if (obj.transform.childCount != 0 && obj.transform.parent.name.StartsWith("A"))
                     obj.transform.GetChild(0).transform.eulerAngles = new Vector3(0.0f, 0.0f, 180.0f);
             }
         }

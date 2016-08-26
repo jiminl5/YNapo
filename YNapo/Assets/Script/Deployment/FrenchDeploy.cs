@@ -11,6 +11,9 @@ public class FrenchDeploy : MonoBehaviour {
     false, false, false, false,
      false, false, false, false}; // first 4 - Left, next 4 - Center, last 4 - Right
 
+    private bool[] DeployReserve = new bool[]
+    {false, false, false, false, false}; // Reserved Spot
+
     public int Type; //Unit Type
     
     public void UnitType(int UnitType)
@@ -70,6 +73,55 @@ public class FrenchDeploy : MonoBehaviour {
             temp.transform.parent = GameObject.Find(Position).transform.GetChild(3);
             GameObject.Find(Position).transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
             DeploySpots[i + 3] = true;
+        }
+    }
+
+    public void Deploy_Reserved(int UnitType)
+    {
+        if (!DeployReserve[0])
+        {
+            GameObject temp = (GameObject)Instantiate(French_Units[UnitType], new Vector2(
+            GameObject.Find("French_Res").transform.GetChild(0).position.x,
+            GameObject.Find("French_Res").transform.GetChild(0).position.y), Quaternion.identity);
+            temp.transform.parent = GameObject.Find("French_Res").transform.GetChild(0);
+            GameObject.Find("French_Res").transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = false;
+            DeployReserve[0] = true;
+        }
+        else if (!DeployReserve[1])
+        {
+            GameObject temp = (GameObject)Instantiate(French_Units[UnitType], new Vector2(
+            GameObject.Find("French_Res").transform.GetChild(1).position.x,
+            GameObject.Find("French_Res").transform.GetChild(1).position.y), Quaternion.identity);
+            temp.transform.parent = GameObject.Find("French_Res").transform.GetChild(1);
+            GameObject.Find("French_Res").transform.GetChild(1).GetComponent<SpriteRenderer>().enabled = false;
+            DeployReserve[1] = true;
+        }
+        else if (!DeployReserve[2])
+        {
+            GameObject temp = (GameObject)Instantiate(French_Units[UnitType], new Vector2(
+            GameObject.Find("French_Res").transform.GetChild(2).position.x,
+            GameObject.Find("French_Res").transform.GetChild(2).position.y), Quaternion.identity);
+            temp.transform.parent = GameObject.Find("French_Res").transform.GetChild(2);
+            GameObject.Find("French_Res").transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
+            DeployReserve[2] = true;
+        }
+        else if (!DeployReserve[3])
+        {
+            GameObject temp = (GameObject)Instantiate(French_Units[UnitType], new Vector2(
+            GameObject.Find("French_Res").transform.GetChild(3).position.x,
+            GameObject.Find("French_Res").transform.GetChild(3).position.y), Quaternion.identity);
+            temp.transform.parent = GameObject.Find("French_Res").transform.GetChild(3);
+            GameObject.Find("French_Res").transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
+            DeployReserve[3] = true;
+        }
+        else if (!DeployReserve[4])
+        {
+            GameObject temp = (GameObject)Instantiate(French_Units[UnitType], new Vector2(
+            GameObject.Find("French_Res").transform.GetChild(4).position.x,
+            GameObject.Find("French_Res").transform.GetChild(4).position.y), Quaternion.identity);
+            temp.transform.parent = GameObject.Find("French_Res").transform.GetChild(4);
+            GameObject.Find("French_Res").transform.GetChild(4).GetComponent<SpriteRenderer>().enabled = false;
+            DeployReserve[4] = true;
         }
     }
 }

@@ -18,6 +18,8 @@ public class ViewPort : MonoBehaviour
         {
             default_ratio = true;
         }
+
+        PlayerPrefs.SetInt("EngageMode", 0); // 0 is false, 1 is true
     }
 
 

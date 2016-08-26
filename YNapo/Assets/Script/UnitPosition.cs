@@ -4,10 +4,12 @@ using System.Collections;
 public class UnitPosition : MonoBehaviour {
 
     public GameObject positionSpot;
+    public GameObject positionReserve;
 
     private int maxSpotX;
     private int maxSpotY;
 
+    private float reserveTmp;
 	// Use this for initialization
 	void Start () {
         maxSpotX = 2;
@@ -18,6 +20,7 @@ public class UnitPosition : MonoBehaviour {
 
     public void GenerateSpots()
     {
+        // Units - L C R
         for (int i = maxSpotX - 1; i >= 0; i--)
         {
             for (int j = 0; j < maxSpotY; j++)
@@ -49,5 +52,18 @@ public class UnitPosition : MonoBehaviour {
                 Allied_R.transform.localPosition = new Vector2(i, (float)(i - (j * 2 + 0.5f)));
             }
         }
+        //Units - Reserved
+        for (int i = 0; i < 5; i++)
+        {
+            reserveTmp = ((Mathf.Pow(-1.0f, i) * 1.5f) * i) + reserveTmp;
+            GameObject French_Res = (GameObject)Instantiate(positionReserve, new Vector2(reserveTmp, -3.3f), Quaternion.identity);
+            French_Res.transform.parent = GameObject.Find("French_Res").transform;
+            French_Res.transform.localPosition = new Vector2(reserveTmp, -3.3f);
+
+            GameObject Allied_Res = (GameObject)Instantiate(positionReserve, new Vector2(reserveTmp, -3.3f), Quaternion.identity);
+            Allied_Res.transform.parent = GameObject.Find("Allied_Res").transform;
+            Allied_Res.transform.localPosition = new Vector2(reserveTmp, -3.3f);
+        }
+
     }
 }

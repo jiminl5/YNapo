@@ -1,27 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class DefaultValue : MonoBehaviour {
 
-    public GameObject[] DefaultObjects = new GameObject[4]; //order: 0 - French, 1 - Allied
+    public static List<Queue<GameObject>> unit_queue = new List<Queue<GameObject>>();
+    public static Queue<GameObject> unit_ready = new Queue<GameObject>();
 
-
-    //UI Default
-    public static Vector2 FrenchSetupDefault;
-    public static Vector2 AlliedSetupDefault;
-
-
-    void Awake()
+    public void DefaultSelection()
     {
-        //FrenchMapPos = new Vector2(DefaultObjects[0].transform.po);
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("PositionSpot"))
+        {
+            if (obj.transform.childCount > 0 && obj.transform.GetChild(0).childCount > 1)
+            {
+                obj.transform.GetChild(0).GetComponent<BringMenu>().selected = false;
+                if (obj.transform.GetChild(0).name.StartsWith("A"))
+                    obj.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+                else if (obj.transform.GetChild(0).name.StartsWith("F"))
+                    obj.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(0.0f, 0.0f, 1.0f, 1.0f);
+            }
+        }
     }
-    // Use this for initialization
-    void Start () {
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }
